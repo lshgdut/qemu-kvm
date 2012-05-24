@@ -211,7 +211,7 @@ static void pic_intack(PicState *s, int irq)
 }
 
 extern int time_drift_fix;
-extern int64_t timer_acks, timer_ints_to_push;
+int64_t timer_acks=0, timer_ints_to_push=0;
 
 int pic_read_irq(PicState *s)
 {

@@ -348,7 +348,8 @@ static uint32_t pit_ioport_read(void *opaque, uint32_t addr)
 }
 
 /* global counters for time-drift fix */
-int64_t timer_acks=0, timer_interrupts=0, timer_ints_to_push=0;
+extern int64_t timer_acks, timer_ints_to_push;
+int64_t timer_interrupts=0;
 
 extern int time_drift_fix;
 
