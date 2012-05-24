@@ -222,22 +222,6 @@ int kvm_deassign_pci_device(KVMState *s,
 }
 #endif
 
-int kvm_reinject_control(KVMState *s, int pit_reinject)
-{
-#ifdef KVM_CAP_REINJECT_CONTROL
-    int r;
-    struct kvm_reinject_control control;
-
-    control.pit_reinject = pit_reinject;
-
-    r = kvm_ioctl(s, KVM_CHECK_EXTENSION, KVM_CAP_REINJECT_CONTROL);
-    if (r > 0) {
-        return kvm_vm_ioctl(s, KVM_REINJECT_CONTROL, &control);
-    }
-#endif
-    return -ENOSYS;
-}
-
 int kvm_has_gsi_routing(void)
 {
     int r = 0;
@@ -463,6 +447,7 @@ int kvm_get_irq_route_gsi(void)
     return -ENOSPC;
 }
 
+#ifdef KVM_CAP_IRQ_ROUTING
 static void kvm_msi_routing_entry(struct kvm_irq_routing_entry *e,
                                   KVMMsiMessage *msg)
 
@@ -474,9 +459,11 @@ static void kvm_msi_routing_entry(struct kvm_irq_routing_entry *e,
     e->u.msi.address_hi = msg->addr_hi;
     e->u.msi.data = msg->data;
 }
+#endif
 
 int kvm_msi_message_add(KVMMsiMessage *msg)
 {
+#ifdef KVM_CAP_IRQ_ROUTING
     struct kvm_irq_routing_entry e;
     int ret;
 
@@ -488,18 +475,26 @@ int kvm_msi_message_add(KVMMsiMessage *msg)
 
     kvm_msi_routing_entry(&e, msg);
     return kvm_add_routing_entry(&e);
+#else
+    return -ENOSYS;
+#endif
 }
 
 int kvm_msi_message_del(KVMMsiMessage *msg)
 {
+#ifdef KVM_CAP_IRQ_ROUTING
     struct kvm_irq_routing_entry e;
 
     kvm_msi_routing_entry(&e, msg);
     return kvm_del_routing_entry(&e);
+#else
+    return -ENOSYS;
+#endif
 }
 
 int kvm_msi_message_update(KVMMsiMessage *old, KVMMsiMessage *new)
 {
+#ifdef KVM_CAP_IRQ_ROUTING
     struct kvm_irq_routing_entry e1, e2;
     int ret;
 
@@ -517,6 +512,9 @@ int kvm_msi_message_update(KVMMsiMessage *old, KVMMsiMessage *new)
     }
 
     return 1;
+#else
+    return -ENOSYS;
+#endif
 }
 
 

@@ -23,6 +23,22 @@
 #include "kvm.h"
 #include "hw/apic.h"
 
+int kvm_reinject_control(KVMState *s, int pit_reinject)
+{
+#ifdef KVM_CAP_REINJECT_CONTROL
+    int r;
+    struct kvm_reinject_control control;
+
+    control.pit_reinject = pit_reinject;
+
+    r = kvm_ioctl(s, KVM_CHECK_EXTENSION, KVM_CAP_REINJECT_CONTROL);
+    if (r > 0) {
+        return kvm_vm_ioctl(s, KVM_REINJECT_CONTROL, &control);
+    }
+#endif
+    return -ENOSYS;
+}
+
 static int kvm_create_pit(KVMState *s)
 {
     int r;

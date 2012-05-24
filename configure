@@ -3579,8 +3579,10 @@ case "$target_arch2" in
       if test $kvm_cap_pit = "yes" ; then
         echo "CONFIG_KVM_PIT=y" >> $config_target_mak
       fi
-      if test $kvm_cap_device_assignment = "yes" ; then
-        echo "CONFIG_KVM_DEVICE_ASSIGNMENT=y" >> $config_target_mak
+      if test "$cpu" = "i386" -o "$cpu" = "x86_64" ; then
+        if test $kvm_cap_device_assignment = "yes" ; then
+          echo "CONFIG_KVM_DEVICE_ASSIGNMENT=y" >> $config_target_mak
+        fi
       fi
     fi
 esac

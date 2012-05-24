@@ -635,7 +635,7 @@ static void pic_register(void)
 
 static void kvm_kernel_pic_save_to_user(PicState *s)
 {
-#ifdef KVM_CAP_IRQCHIP
+#ifdef KVM_IRQCHIP_PIC_MASTER
     struct kvm_irqchip chip;
     struct kvm_pic_state *kpic;
 
@@ -666,7 +666,7 @@ static void kvm_kernel_pic_save_to_user(PicState *s)
 
 static int kvm_kernel_pic_load_from_user(PicState *s)
 {
-#ifdef KVM_CAP_IRQCHIP
+#ifdef KVM_IRQCHIP_PIC_MASTER
     struct kvm_irqchip chip;
     struct kvm_pic_state *kpic;
 
@@ -701,8 +701,10 @@ static void kvm_i8259_set_irq(void *opaque, int irq, int level)
 {
     int pic_ret;
     if (kvm_set_irq(irq, level, &pic_ret)) {
+#ifdef KVM_IRQCHIP_PIC_MASTER
         if (pic_ret != 0)
             apic_set_irq_delivered();
+#endif
         return;
     }
 }

@@ -80,7 +80,9 @@ endif
 libobj-$(TARGET_SPARC64) += vis_helper.o
 libobj-$(CONFIG_NEED_MMU) += mmu.o
 
+ifeq ($(TARGET_BASE_ARCH), i386)
 libobj-$(CONFIG_KVM) += kvm-tpr-opt.o
+endif
 
 libobj-$(TARGET_ARM) += neon_helper.o iwmmxt_helper.o
 ifeq ($(TARGET_BASE_ARCH), sparc)
